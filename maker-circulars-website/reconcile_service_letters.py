@@ -338,7 +338,8 @@ def reconcile(dry_run: bool = False) -> dict:
             "breadcrumb": breadcrumb,
             "document_name": item["title"],
             "document_link": item["verified_url"],
-            "is_new": True
+            "is_new": True,
+            "date_of_upload": datetime.datetime.now().strftime("%Y-%m-%d")
         }
         records_to_insert.append(record_data)
 

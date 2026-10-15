@@ -83,16 +83,23 @@ def test_2_database_integrity_and_fields():
         assert data.get("is_new") is True
         assert data.get("maker") == "MAN B&W"
         assert data.get("breadcrumb") == "Maker Circulars > MAN B&W > 2026"
+        assert data.get("date_of_upload") == "2026-10-12", f"Expected date_of_upload '2026-10-12', got {data.get('date_of_upload')}"
 
-    # Verify original excel records do NOT have is_new
+    # Verify original excel records do NOT have is_new and have date_of_upload blank
     excel_new_count = cur.execute(
         "SELECT count(*) FROM records WHERE id <= 1216 AND json_extract(data, '$.is_new') IS NOT NULL"
     ).fetchone()[0]
     assert excel_new_count == 0, f"Expected 0 original excel records flagged as is_new, got {excel_new_count}"
+
+    excel_with_date = cur.execute(
+        "SELECT count(*) FROM records WHERE id <= 1216 AND json_extract(data, '$.date_of_upload') != ''"
+    ).fetchone()[0]
+    assert excel_with_date == 0, f"Expected 0 original excel records with populated date_of_upload, got {excel_with_date}"
         
     conn.close()
     print("  [PASS] _id and dms successfully removed from schema, column_definitions, and all records.")
-    print("  [PASS] Newly added records (apart from Excel data) accurately flagged with is_new: True.")
+    print("  [PASS] Newly added records (apart from Excel data) accurately flagged with is_new: True and date_of_upload.")
+    print("  [PASS] Excel records have date_of_upload left completely blank.")
 
 def test_3_pdf_links_accessibility():
     print("\n=== Test 3: PDF Links Accessibility ===")
